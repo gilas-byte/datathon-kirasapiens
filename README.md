@@ -56,11 +56,17 @@ Grupos de 5 estudantes (2ª e 4ª fase). Banca formada por especialistas de empr
 
 ## Dados
 
-Ficam em `raw/` e não são versionados (ver `.gitignore`).
+Ficam em `raw/`.
+
+O `Novo_Caged_MOV_Limpo.csv` (~413 MB) passa do limite de 100 MB por arquivo do GitHub, então não está neste repositório. Baixe no Kaggle:
+
+**[Caged MOV Limpo no Kaggle](https://www.kaggle.com/datasets/guilhermeanselmo/caged-mov-limpo/data)**
+
+Coloque o arquivo baixado em `raw/Novo_Caged_MOV_Limpo.csv`.
 
 | Arquivo | Conteúdo |
 |:---:|:---:|
-| `Novo_Caged_MOV_Limpo.csv` | Movimentações de emprego em SC nos últimos 12 meses (~3,4 milhões de linhas, separador `;`) |
+| `Novo_Caged_MOV_Limpo.csv` | Movimentações de emprego em SC nos últimos 12 meses (~3,4 milhões de linhas, separador `;`). Baixar do Kaggle |
 | `Municipios_SC_limpo.csv` | Dados demográficos e socioeconômicos dos 296 municípios de SC |
 | `Dicionario_de_dados.xlsx` | Documentação das variáveis das bases |
 
