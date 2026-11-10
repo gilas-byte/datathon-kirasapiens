@@ -1,0 +1,280 @@
+{
+  "gerado_em": "2026-11-10T16:49:14+00:00",
+  "base": "Novo CAGED SC, indústria de transformação (CNAE seção C)",
+  "janela": {
+    "inicio": 202509,
+    "fim": 202608
+  },
+  "movimentacoes": 835776,
+  "admissoes": 418437,
+  "desligamentos": 417339,
+  "arquivos": {
+    "cubo": {
+      "arquivo": "cubo.json",
+      "linhas": 5546,
+      "colunas": [
+        "regiao_intermediaria",
+        "regiao_imediata",
+        "setor",
+        "competencia",
+        "admissoes",
+        "desligamentos",
+        "a_pedido",
+        "adm_superior",
+        "saldo"
+      ]
+    },
+    "est_correlacoes": {
+      "arquivo": "est_correlacoes.json",
+      "linhas": 50,
+      "colunas": [
+        "nivel",
+        "var_x",
+        "var_y",
+        "rho",
+        "p_valor",
+        "n",
+        "significativo_5pct"
+      ]
+    },
+    "est_logit_pedido": {
+      "arquivo": "est_logit_pedido.json",
+      "linhas": 10,
+      "colunas": [
+        "termo",
+        "coef",
+        "razao_chance",
+        "ic95_inf",
+        "ic95_sup",
+        "p_valor",
+        "razao_chance_10pct",
+        "n",
+        "pseudo_r2"
+      ]
+    },
+    "est_pedido_salario_escolaridade": {
+      "arquivo": "est_pedido_salario_escolaridade.json",
+      "linhas": 30,
+      "colunas": [
+        "quintil_sal",
+        "faixa_esc",
+        "desligamentos",
+        "a_pedido",
+        "salario_mediano",
+        "salario_min",
+        "salario_max",
+        "pct_pedido"
+      ]
+    },
+    "est_sazonalidade_mensal": {
+      "arquivo": "est_sazonalidade_mensal.json",
+      "linhas": 432,
+      "colunas": [
+        "recorte_tipo",
+        "recorte",
+        "competênciamov",
+        "mes",
+        "admissoes",
+        "desligamentos",
+        "saldo",
+        "saldo_acumulado",
+        "saldo_sobre_fluxo_medio",
+        "movimentacoes",
+        "a_pedido",
+        "pct_pedido",
+        "termino_contrato",
+        "pct_termino_contrato",
+        "salario_mediano_adm"
+      ]
+    },
+    "est_sazonalidade_resumo": {
+      "arquivo": "est_sazonalidade_resumo.json",
+      "linhas": 36,
+      "colunas": [
+        "recorte_tipo",
+        "recorte",
+        "saldo_anual",
+        "movimentacoes_anuais",
+        "mes_pico",
+        "saldo_pico",
+        "mes_vale",
+        "saldo_vale",
+        "amplitude_relativa",
+        "saldo_dez",
+        "saldo_sem_dez_jan",
+        "pior_saldo_acumulado",
+        "mes_pior_acumulado",
+        "pct_pedido_min",
+        "pct_pedido_max",
+        "pct_termino_contrato_dez",
+        "pct_termino_contrato_medio",
+        "pct_meses_sinal_oposto"
+      ]
+    },
+    "est_sensibilidade_cenarios": {
+      "arquivo": "est_sensibilidade_cenarios.json",
+      "linhas": 48,
+      "colunas": [
+        "metodo",
+        "min_mov",
+        "limiar",
+        "padrao",
+        "Apagão de mão de obra",
+        "Expansão sob pressão",
+        "Expansão acelerada",
+        "Retração",
+        "Estável",
+        "Volume insuficiente",
+        "alertas"
+      ]
+    },
+    "est_sensibilidade_pares": {
+      "arquivo": "est_sensibilidade_pares.json",
+      "linhas": 503,
+      "colunas": [
+        "regiao_imediata",
+        "setor",
+        "movimentacoes",
+        "saldo",
+        "pct_pedido_demissao",
+        "premio_salarial",
+        "indice_reposicao",
+        "indice_pressao",
+        "diagnostico",
+        "cenarios_avaliados",
+        "cenarios_alerta",
+        "pct_cenarios_alerta",
+        "indice_pressao_sem_reposicao",
+        "diagnostico_sem_reposicao",
+        "estabilidade"
+      ]
+    },
+    "ind_macrofamilia": {
+      "arquivo": "ind_macrofamilia.json",
+      "linhas": 17,
+      "colunas": [
+        "macrofamilia",
+        "admissoes",
+        "desligamentos",
+        "saldo",
+        "movimentacoes",
+        "indice_reposicao",
+        "pct_pedido_demissao",
+        "salario_mediano_adm",
+        "premio_salarial",
+        "pct_superior_adm",
+        "pct_ate_fundamental_adm",
+        "idade_media_adm",
+        "indice_pressao",
+        "taxa_saldo",
+        "indice_expansao",
+        "diagnostico"
+      ]
+    },
+    "ind_municipio": {
+      "arquivo": "ind_municipio.json",
+      "linhas": 294,
+      "colunas": [
+        "cod_ibge",
+        "admissoes",
+        "desligamentos",
+        "saldo",
+        "movimentacoes",
+        "indice_reposicao",
+        "pct_pedido_demissao",
+        "salario_mediano_adm",
+        "premio_salarial",
+        "pct_superior_adm",
+        "pct_ate_fundamental_adm",
+        "idade_media_adm",
+        "populacao",
+        "saldo_10k_hab",
+        "municipio_nome",
+        "regiao_imediata",
+        "regiao_intermediaria",
+        "indice_pressao",
+        "indice_expansao",
+        "diagnostico"
+      ]
+    },
+    "ind_regiao_macrofamilia": {
+      "arquivo": "ind_regiao_macrofamilia.json",
+      "linhas": 119,
+      "colunas": [
+        "regiao_intermediaria",
+        "macrofamilia",
+        "admissoes",
+        "desligamentos",
+        "saldo",
+        "movimentacoes",
+        "indice_reposicao",
+        "pct_pedido_demissao",
+        "salario_mediano_adm",
+        "premio_salarial",
+        "pct_superior_adm",
+        "pct_ate_fundamental_adm",
+        "idade_media_adm",
+        "populacao",
+        "saldo_10k_hab",
+        "indice_pressao",
+        "indice_expansao",
+        "diagnostico"
+      ]
+    },
+    "ind_regiao_setor": {
+      "arquivo": "ind_regiao_setor.json",
+      "linhas": 503,
+      "colunas": [
+        "regiao_imediata",
+        "setor",
+        "admissoes",
+        "desligamentos",
+        "saldo",
+        "movimentacoes",
+        "indice_reposicao",
+        "pct_pedido_demissao",
+        "salario_mediano_adm",
+        "premio_salarial",
+        "pct_superior_adm",
+        "pct_ate_fundamental_adm",
+        "idade_media_adm",
+        "populacao",
+        "saldo_10k_hab",
+        "indice_pressao",
+        "indice_expansao",
+        "diagnostico"
+      ]
+    },
+    "log_limpeza": {
+      "arquivo": "log_limpeza.json",
+      "linhas": 5,
+      "colunas": [
+        "etapa",
+        "linhas"
+      ]
+    },
+    "municipios": {
+      "arquivo": "municipios.json",
+      "linhas": 295,
+      "colunas": [
+        "municipio_nome",
+        "cod_ibge",
+        "area_km2",
+        "pop_censo_2022",
+        "densidade_2022",
+        "pop_estimada_2026",
+        "escolarizacao_6_14",
+        "idhm_2010",
+        "mortalidade_infantil",
+        "receitas",
+        "despesas",
+        "pib_per_capita_2023",
+        "cod_caged",
+        "cod_reg_imediata",
+        "regiao_imediata",
+        "cod_reg_intermediaria",
+        "regiao_intermediaria"
+      ]
+    }
+  }
+}
