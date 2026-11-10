@@ -1,0 +1,121 @@
+"""Testes de consistência do backend. Rode com: pytest tests/
+
+Usam o industria.parquet e os CSVs versionados em data/processed/ (não precisam do CAGED bruto).
+"""
+import json
+import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
+
+import estatistica  # noqa: E402
+import exportar  # noqa: E402
+from indicadores import METODOS_PRESSAO, classificar  # noqa: E402
+
+P = ROOT / "data/processed"
+DERIVADAS = ["indice_pressao", "indice_expansao", "diagnostico", "taxa_saldo"]
+
+
+@pytest.fixture(scope="module")
+def ind():
+    return pd.read_parquet(P / "industria.parquet")
+
+
+@pytest.fixture(scope="module")
+def rs():
+    return pd.read_csv(P / "ind_regiao_setor.csv")
+
+
+# ---------------------------------------------------------------- indicadores
+
+@pytest.mark.parametrize("arquivo", ["ind_regiao_setor", "ind_municipio", "ind_macrofamilia",
+                                     "ind_regiao_macrofamilia"])
+def test_classificar_padrao_reproduz_tabelas(arquivo):
+    t = pd.read_csv(P / f"{arquivo}.csv")
+    n = classificar(t.drop(columns=DERIVADAS, errors="ignore"))
+    assert (n["diagnostico"] == t["diagnostico"]).all()
+    assert np.allclose(n["indice_pressao"], t["indice_pressao"], equal_nan=True)
+
+
+@pytest.mark.parametrize("metodo", METODOS_PRESSAO)
+def test_metodos_nao_mudam_expansao_nem_volume(rs, metodo):
+    base = rs.drop(columns=DERIVADAS, errors="ignore")
+    n = classificar(base, metodo=metodo)
+    assert np.allclose(n["indice_expansao"], rs["indice_expansao"], equal_nan=True)
+    assert ((n["diagnostico"] == "Volume insuficiente") == (rs["movimentacoes"] < 300)).all()
+
+
+def test_metodo_invalido(rs):
+    with pytest.raises(ValueError):
+        classificar(rs, metodo="xyz")
+
+
+# ---------------------------------------------------------------- base
+
+def test_totais_da_base(ind):
+    assert len(ind) == 835_776
+    assert ind["admissao"].sum() - (~ind["admissao"]).sum() == 1_098
+    assert ind["competênciamov"].nunique() == 12
+
+
+def test_pedido_so_em_desligamento(ind):
+    assert not (ind["admissao"] & ind["pedido"]).any()
+
+
+# ---------------------------------------------------------------- estatística
+
+def test_sensibilidade_cenario_padrao_bate_com_diagnostico(rs):
+    cen, pares = estatistica.sensibilidade(rs)
+    assert len(cen) == len(METODOS_PRESSAO) * 4 * 3
+    padrao = cen[cen["padrao"]].iloc[0]
+    c = rs["diagnostico"].value_counts()
+    assert padrao["Apagão de mão de obra"] == c["Apagão de mão de obra"]
+    assert padrao["Expansão sob pressão"] == c["Expansão sob pressão"]
+    assert len(pares) == len(rs)
+    assert pares["pct_cenarios_alerta"].dropna().between(0, 1).all()
+    assert (pares.loc[pares["movimentacoes"] < 300, "estabilidade"] == "Sem volume").all()
+
+
+def test_sazonalidade_fecha_com_a_base(ind):
+    m = estatistica.sazonalidade_mensal(ind)
+    for tipo, g in m.groupby("recorte_tipo"):
+        assert g["saldo"].sum() == 1_098, tipo
+        assert g["movimentacoes"].sum() == len(ind), tipo
+    total = m[m["recorte_tipo"] == "total"]
+    assert total["saldo_acumulado"].iloc[-1] == 1_098
+    r = estatistica.sazonalidade_resumo(m)
+    assert r.loc[r["recorte_tipo"] == "total", "mes_vale"].item() == "dez/25"
+
+
+def test_grade_salario_escolaridade(ind):
+    d = estatistica.base_desligamentos(ind)
+    g = estatistica.grade_salario_escolaridade(d)
+    total = g[(g["quintil_sal"] == "Todas") & (g["faixa_esc"] == "Todas")]
+    assert total["desligamentos"].item() == len(d)
+    celulas = g[(g["quintil_sal"] != "Todas") & (g["faixa_esc"] != "Todas")]
+    assert celulas["desligamentos"].sum() == len(d)
+    assert g["pct_pedido"].between(0, 1).all()
+
+
+# ---------------------------------------------------------------- exportação
+
+def test_cubo_soma_igual_a_base(ind):
+    c = exportar.cubo(ind)
+    assert c["admissoes"].sum() == ind["admissao"].sum()
+    assert c["desligamentos"].sum() == (~ind["admissao"]).sum()
+    assert c["a_pedido"].sum() == ind["pedido"].sum()
+
+
+def test_manifest_lista_arquivos_existentes():
+    manifest = P / "api/manifest.json"
+    if not manifest.exists():
+        pytest.skip("rode python backend/main.py exportar antes")
+    m = json.loads(manifest.read_text())
+    for a in m["arquivos"].values():
+        dados = json.loads((P / "api" / a["arquivo"]).read_text())
+        assert len(dados) == a["linhas"]
