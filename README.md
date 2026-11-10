@@ -26,12 +26,12 @@ Desafio prático de análise de dados e inteligência artificial, Bacharelado em
 | Integrante | Papel | Responsável por |
 |---|---|---|
 | Samuel | Product Owner | Pergunta de negócio, recomendações, slides do pitch e hospedagem (Replit, se necessário) |
-| Filipe | Visualização de dados | Evolução do dashboard, em especial as visualizações de raio/círculo (bolhas) e os mapas de calor |
+| Filipe | Visualização de dados | Evolução do dashboard (`dashboard/app.py`), em especial as visualizações de raio/círculo (bolhas) e os mapas de calor |
 | Vinicius | Backend, estatística e QA | Insights estatísticos (`backend/indicadores.py`, notebook) e testes finais de todo o projeto |
-| Guilherme | Front e Git | Front do dashboard (`frontend/app.py`), controle de versão e documentação |
-| Bernardo | Front e Git | Front do dashboard (`frontend/app.py`), controle de versão e otimização |
+| Guilherme | Front e Git | Frontend em React (`frontend/`), controle de versão e documentação |
+| Bernardo | Front e Git | Frontend em React (`frontend/`), controle de versão e otimização |
 
-**Stack:** Python, com pandas e pyarrow (dados), Plotly e Streamlit (dashboard), Jupyter (notebook) e o SDK da Anthropic (agrupamento de CBOs por IA).
+**Stack:** frontend da aplicação em React (JavaScript); dados, IA e dashboard em Python, com pandas e pyarrow (dados), Plotly e Streamlit (dashboard), Jupyter (notebook) e o SDK da Anthropic (agrupamento de CBOs por IA).
 
 ---
 
@@ -83,11 +83,17 @@ Grupos de 5 estudantes (2ª e 4ª fase). Banca formada por especialistas de empr
 
 ## Dados
 
-Ficam em `raw/`. A base do CAGED (~400 MB) não é versionada, porque passa do limite do GitHub (ver `.gitignore`): baixe-a do repositório oficial do desafio e coloque em `raw/`. As outras duas bases são pequenas e estão no Git.
+Ficam em `raw/`.
+
+O `Novo_Caged_MOV_Limpo.csv` (~413 MB) passa do limite de 100 MB por arquivo do GitHub, então não está neste repositório. Baixe no Kaggle:
+
+**[Caged MOV Limpo no Kaggle](https://www.kaggle.com/datasets/guilhermeanselmo/caged-mov-limpo/data)**
+
+Coloque o arquivo baixado em `raw/Novo_Caged_MOV_Limpo.csv`.
 
 | Arquivo | Conteúdo |
 |:---:|:---:|
-| `Novo_Caged_MOV_Limpo.csv` | Movimentações de emprego em SC nos últimos 12 meses (~3,4 milhões de linhas, separador `;`) |
+| `Novo_Caged_MOV_Limpo.csv` | Movimentações de emprego em SC nos últimos 12 meses (~3,4 milhões de linhas, separador `;`). Baixar do Kaggle |
 | `Municipios_SC_limpo.csv` | Dados demográficos e socioeconômicos dos 295 municípios de SC |
 | `Dicionario_de_dados.xlsx` | Documentação das variáveis das bases |
 
@@ -100,7 +106,8 @@ Ficam em `raw/`. A base do CAGED (~400 MB) não é versionada, porque passa do l
 | `docs/` | Material do evento (slides do desafio e Guia do Participante) |
 | `raw/` | Dados brutos fornecidos (o CAGED fica fora do Git) |
 | `backend/` | Pipeline em Python: `main.py` (ponto de entrada), `pipeline.py` (carga, limpeza, junção e exportação), `indicadores.py` (indicadores e diagnóstico), `cbo_llm.py` (prompt e API de IA para as CBOs) |
-| `frontend/` | Dashboard Streamlit: `app.py` (5 abas: mapa, matriz, macrofamílias, renda e escolaridade, recomendações) |
+| `frontend/` | Frontend da aplicação em React (JavaScript) |
+| `dashboard/` | Dashboard analítico em Python (Streamlit): `app.py`, com 5 abas (mapa, matriz, macrofamílias, renda e escolaridade, recomendações) |
 | `data/` | Apoio: regiões do IBGE, malha municipal, macrofamílias de CBO e `processed/` (saídas do pipeline que alimentam o dashboard) |
 | `notebooks/` | Notebook documentado com o pipeline completo e as saídas |
 
@@ -111,11 +118,11 @@ Ficam em `raw/`. A base do CAGED (~400 MB) não é versionada, porque passa do l
 ```bash
 pip install -r requirements.txt
 
-# 1. Coloque Novo_Caged_MOV_Limpo.csv em raw/ e gere os indicadores
+# 1. Baixe o Novo_Caged_MOV_Limpo.csv do Kaggle (link em "Dados"), coloque em raw/ e gere os indicadores
 python backend/main.py
 
 # 2. Abra o dashboard (funciona mesmo sem o CSV bruto, porque lê data/processed/)
-streamlit run frontend/app.py
+streamlit run dashboard/app.py
 ```
 
 ---
