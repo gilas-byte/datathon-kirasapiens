@@ -1,0 +1,8 @@
+pandas>=2.2
+pyarrow>=15
+numpy
+openpyxl
+plotly>=6.0
+streamlit>=1.40
+matplotlib
+anthropic  # opcional: só para regenerar as macrofamílias via API (backend/cbo_llm.py)
