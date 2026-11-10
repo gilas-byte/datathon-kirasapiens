@@ -61,7 +61,31 @@ def tabela(df: pd.DataFrame, chaves: list[str], pop: pd.Series | None = None) ->
     return t
 
 
-def classificar(t: pd.DataFrame, min_mov: int = MIN_MOV) -> pd.DataFrame:
+LIMIAR = 0.5  # corte (em desvios-padrão) dos índices de pressão e expansão
+
+# Variantes do Índice de Pressão, usadas na análise de sensibilidade (backend/estatistica.py):
+#   atual          média dos z-scores de % a pedido, prêmio salarial e reposição (padrão do projeto)
+#   sem_reposicao  só % a pedido e prêmio: a reposição é quase o inverso do saldo (ρ ≈ −0,9)
+#                  e por isso mede retração, não falta de mão de obra
+#   winsor         componentes limitados aos percentis 1 e 99 antes do z-score
+#   robusto        z-score robusto: (x − mediana) / (1,4826 · MAD)
+METODOS_PRESSAO = ("atual", "sem_reposicao", "winsor", "robusto")
+
+
+def _zscore(s: pd.Series, ok: pd.Series, metodo: str) -> pd.Series:
+    v = s[ok]
+    if metodo == "winsor":
+        lo, hi = v.quantile([0.01, 0.99])
+        s, v = s.clip(lo, hi), v.clip(lo, hi)
+    if metodo == "robusto":
+        mad = 1.4826 * (v - v.median()).abs().median()
+        if mad > 0:
+            return (s - v.median()) / mad
+    return (s - v.mean()) / v.std(ddof=0)
+
+
+def classificar(t: pd.DataFrame, min_mov: int = MIN_MOV, metodo: str = "atual",
+                limiar: float = LIMIAR) -> pd.DataFrame:
     """Índice de Pressão (apagão) e quadrante de diagnóstico.
 
     Pressão = média dos z-scores de:
@@ -69,36 +93,32 @@ def classificar(t: pd.DataFrame, min_mov: int = MIN_MOV) -> pd.DataFrame:
       - prêmio salarial de admissão (empresa paga mais para repor)
       - índice de reposição (desligamentos / admissões: contrata só para repor)
     Expansão = z-score do saldo (por 10 mil hab. quando disponível).
+
+    `metodo` muda só o cálculo da pressão (ver METODOS_PRESSAO); a expansão usa sempre
+    o z-score padrão, para isolar o efeito na análise de sensibilidade.
     """
+    if metodo not in METODOS_PRESSAO:
+        raise ValueError(f"metodo deve ser um de {METODOS_PRESSAO}")
     t = t.copy()
     ok = t["movimentacoes"] >= min_mov
 
-    def z(col):
-        v = t.loc[ok, col]
-        return (t[col] - v.mean()) / v.std(ddof=0)
-
-    comp = pd.concat([z("pct_pedido_demissao"), z("premio_salarial").fillna(0),
-                      z("indice_reposicao")], axis=1)
+    cols = ["pct_pedido_demissao", "premio_salarial"]
+    if metodo != "sem_reposicao":
+        cols.append("indice_reposicao")
+    comp = pd.concat([_zscore(t[c], ok, metodo) for c in cols], axis=1)
+    comp["premio_salarial"] = comp["premio_salarial"].fillna(0)
     t["indice_pressao"] = comp.mean(axis=1)
+
     base = "saldo_10k_hab" if "saldo_10k_hab" in t else "saldo"
     if base == "saldo":
         t["taxa_saldo"] = t["saldo"] / t["movimentacoes"]
         base = "taxa_saldo"
-    t["indice_expansao"] = z(base)
+    t["indice_expansao"] = _zscore(t[base], ok, "atual")
 
-    def quad(r):
-        if r["movimentacoes"] < min_mov:
-            return "Volume insuficiente"
-        p, e = r["indice_pressao"], r["indice_expansao"]
-        if p >= 0.5 and e >= 0.5:
-            return "Expansão sob pressão"
-        if p >= 0.5:
-            return "Apagão de mão de obra"
-        if e >= 0.5:
-            return "Expansão acelerada"
-        if e <= -0.5:
-            return "Retração"
-        return "Estável"
-
-    t["diagnostico"] = t.apply(quad, axis=1)
+    p, e = t["indice_pressao"], t["indice_expansao"]
+    t["diagnostico"] = np.select(
+        [~ok, (p >= limiar) & (e >= limiar), p >= limiar, e >= limiar, e <= -limiar],
+        ["Volume insuficiente", "Expansão sob pressão", "Apagão de mão de obra",
+         "Expansão acelerada", "Retração"],
+        default="Estável")
     return t
