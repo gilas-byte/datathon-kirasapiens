@@ -18,3 +18,6 @@ pessoal/
 # Base bruta do CAGED (~400 MB, acima do limite de 100 MB do GitHub)
 raw/Novo_Caged_MOV_Limpo.csv
 data/processed/caged_raw.parquet
+
+# Grafo de conhecimento gerado pelo graphify
+graphify-out/
