@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+
+# Ambiente e segredos
+.env
+
+# Editor / sistema
+.vscode/
+.idea/
+.DS_Store
+
+# Arquivos pessoais
+pessoal/
