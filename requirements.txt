@@ -5,4 +5,7 @@ openpyxl
 plotly>=6.0
 streamlit>=1.40
 matplotlib
+scipy
+statsmodels>=0.14
+pytest
 anthropic  # opcional: só para regenerar as macrofamílias via API (backend/cbo_llm.py)
