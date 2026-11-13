@@ -19,13 +19,19 @@ type Chave = keyof typeof INDICADORES;
 // Fundo de mapa cinza sem tiles externos
 const estiloFundo = { version: 8, sources: {}, layers: [{ id: "bg", type: "background", paint: { "background-color": "#181818" } }] };
 
+const temWebGL = () => {
+  try { return !!document.createElement("canvas").getContext("webgl2"); } catch { return false; }
+};
+
 function MapaSC() {
   const { selRegioes } = useFiltros();
   const { dados: mun } = useData<Mun[]>("ind_municipio.json");
   const { dados: geo } = useData<unknown>("sc_municipios.geojson");
   const [ind, setInd] = useState<Chave>("saldo");
 
+  const webgl = useMemo(temWebGL, []);
   const linhas = useMemo(() => (mun ?? []).filter((m) => selRegioes.has(m.regiao_intermediaria)), [mun, selRegioes]);
+  if (!webgl) return <div className="estado erro">Este navegador não tem WebGL ativo, então o mapa não pode ser desenhado. Os demais gráficos funcionam normalmente.</div>;
   if (!mun || !geo) return <div className="estado">Carregando mapa…</div>;
 
   const cfg = INDICADORES[ind];
@@ -87,7 +93,7 @@ export default function Mapa() {
         <Plot
           data={[{ type: "bar", orientation: "h", x: porRegiao.map(([, v]) => v), y: porRegiao.map(([k]) => k),
                    marker: { color: porRegiao.map(([, v]) => (v >= 0 ? cores.pos : cores.neg)) } }]}
-          layout={{ ...layoutBase(), height: 560, margin: { l: 240, r: 16, t: 8, b: 32 } }}
+          layout={{ ...layoutBase(), height: 560, margin: { l: 16, r: 16, t: 8, b: 32 }, yaxis: { ...layoutBase().yaxis, automargin: true } }}
           config={plotConfig} style={{ width: "100%" }} useResizeHandler
         />
       </Painel>

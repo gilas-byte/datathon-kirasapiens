@@ -24,8 +24,9 @@ export function FiltrosProvider({ children }: { children: ReactNode }) {
   // null = "tudo selecionado" (evita estado inicial dessincronizado com o carregamento)
   const [r, setR] = useState<Set<string> | null>(null);
   const [s, setS] = useState<Set<string> | null>(null);
-  const selRegioes = r ?? new Set(regioes);
-  const selSetores = s ?? new Set(setores);
+  // Sets estáveis entre renders: evita recalcular e redesenhar todos os gráficos à toa
+  const selRegioes = useMemo(() => r ?? new Set(regioes), [r, regioes]);
+  const selSetores = useMemo(() => s ?? new Set(setores), [s, setores]);
 
   const alterna: Ctx["alterna"] = (tipo, v) => {
     const [atual, set, todosV] = tipo === "regiao" ? [selRegioes, setR, regioes] : [selSetores, setS, setores];
@@ -37,7 +38,7 @@ export function FiltrosProvider({ children }: { children: ReactNode }) {
   // Só somas (aditivo) acontecem no navegador. Medianas/índices vêm prontos dos ind_*.json.
   const cuboFiltrado = useMemo(
     () => cubo.filter((l) => selRegioes.has(l.regiao_intermediaria) && selSetores.has(l.setor)),
-    [cubo, r, s] // eslint-disable-line react-hooks/exhaustive-deps
+    [cubo, selRegioes, selSetores]
   );
   return <C.Provider value={{ regioes, setores, selRegioes, selSetores, alterna, todos, cuboFiltrado, intermediariaDe, carregando, erro }}>{children}</C.Provider>;
 }

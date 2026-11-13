@@ -1,15 +1,16 @@
-import { useState } from "react";
 import { FiltrosProvider, useFiltros } from "./lib/filtros";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Toaster, sileo } from "sileo";
 import "sileo/styles.css";
 import FilterBar from "./components/FilterBar";
 import KpiStrip from "./components/KpiStrip";
-import Mapa from "./tabs/Mapa";
-import Matriz from "./tabs/Matriz";
-import Macrofamilias from "./tabs/Macrofamilias";
-import Renda from "./tabs/Renda";
-import Recomendacoes from "./tabs/Recomendacoes";
+import ErrorBoundary from "./components/ErrorBoundary";
+
+const Mapa = lazy(() => import("./tabs/Mapa"));
+const Matriz = lazy(() => import("./tabs/Matriz"));
+const Macrofamilias = lazy(() => import("./tabs/Macrofamilias"));
+const Renda = lazy(() => import("./tabs/Renda"));
+const Recomendacoes = lazy(() => import("./tabs/Recomendacoes"));
 
 const ABAS = [
   { id: "mapa", nome: "Mapa territorial", C: Mapa },
@@ -26,6 +27,14 @@ function Conteudo() {
     if (erro) sileo.error({ title: "Falha ao carregar dados", description: erro });
   }, [erro]);
   const Atual = ABAS.find((a) => a.id === aba)!.C;
+  const refs = useRef<(HTMLButtonElement | null)[]>([]);
+  // Setas esquerda/direita, Home e End navegam entre abas (padrão WAI-ARIA)
+  const teclado = (e: KeyboardEvent, i: number) => {
+    const n = ABAS.length;
+    const alvo = e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+    if (alvo < 0) return;
+    e.preventDefault(); setAba(ABAS[alvo].id); refs.current[alvo]?.focus();
+  };
   return (
     <main className="main">
       <div className="topo">
@@ -37,12 +46,18 @@ function Conteudo() {
         : carregando ? <div className="estado">Carregando dados…</div>
         : (<>
             <KpiStrip />
-            <div className="abas" role="tablist">
-              {ABAS.map((a) => (
-                <button key={a.id} role="tab" className="aba" aria-selected={aba === a.id} onClick={() => setAba(a.id)}>{a.nome}</button>
+            <div className="abas" role="tablist" aria-label="Seções do painel">
+              {ABAS.map((a, i) => (
+                <button key={a.id} id={"aba-" + a.id} ref={(el) => { refs.current[i] = el; }} role="tab" className="aba"
+                  aria-selected={aba === a.id} aria-controls="painel-abas" tabIndex={aba === a.id ? 0 : -1}
+                  onClick={() => setAba(a.id)} onKeyDown={(e) => teclado(e, i)}>{a.nome}</button>
               ))}
             </div>
-            <Atual />
+            <div id="painel-abas" role="tabpanel" aria-labelledby={"aba-" + aba}>
+              <ErrorBoundary key={aba}>
+                <Suspense fallback={<div className="estado">Carregando gráficos…</div>}><Atual /></Suspense>
+              </ErrorBoundary>
+            </div>
           </>)}
     </main>
   );

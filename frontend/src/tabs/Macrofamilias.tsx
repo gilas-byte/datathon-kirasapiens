@@ -31,7 +31,7 @@ export default function Macrofamilias() {
           ocupações de cada subgrupo). Assim dá para ver se o gargalo está na engenharia ou no chão de fábrica.
           À direita, mais sinais de apagão.
         </p>
-        <Plot
+        <div className="plot-scroll"><Plot
           data={DIAG.map((d) => {
             const x = g.filter((m) => m.diagnostico === d);
             return {
@@ -43,17 +43,17 @@ export default function Macrofamilias() {
             };
           }).filter((t) => (t.x as number[]).length) as never}
           layout={{
-            ...layoutBase(), height: 500, margin: { l: 300, r: 16, t: 36, b: 40 }, barmode: "overlay",
-            legend: { orientation: "h", y: 1.1 },
-            yaxis: { ...layoutBase().yaxis, categoryorder: "array", categoryarray: g.map((m) => m.macrofamilia) },
+            ...layoutBase(), height: 500, margin: { l: 16, r: 16, t: 16, b: 110 }, barmode: "overlay",
+            legend: { orientation: "h", y: -0.18 },
+            yaxis: { ...layoutBase().yaxis, automargin: true, categoryorder: "array", categoryarray: g.map((m) => m.macrofamilia) },
             xaxis: { ...layoutBase().xaxis, title: { text: "Índice de pressão (z)" } },
           } as never}
           config={plotConfig} style={{ width: "100%" }} useResizeHandler
-        />
+        /></div>
       </Painel>
       <Painel titulo="% dos desligamentos que foram a pedido do trabalhador, por região" fonte="ind_regiao_macrofamilia.json" span={12}>
         {heat.fams.length ? (
-          <Plot
+          <div className="plot-scroll"><Plot
             data={[{
               type: "heatmap", x: heat.regs, y: heat.fams, z: heat.z, colorscale: escalaSeq, hoverongaps: false,
               text: heat.z.map((l) => l.map((v) => (v == null ? "" : v.toFixed(0)))), texttemplate: "%{text}",
@@ -62,11 +62,11 @@ export default function Macrofamilias() {
               colorbar: { thickness: 10, outlinewidth: 0, ticksuffix: "%" }, xgap: 2, ygap: 2,
             }] as never}
             layout={{
-              ...layoutBase(), height: 560, margin: { l: 300, r: 16, t: 36, b: 16 },
-              xaxis: { side: "top", showgrid: false }, yaxis: { autorange: "reversed", showgrid: false },
+              ...layoutBase(), height: 560, margin: { l: 16, r: 16, t: 36, b: 16 },
+              xaxis: { side: "top", showgrid: false, automargin: true }, yaxis: { autorange: "reversed", showgrid: false, automargin: true },
             } as never}
             config={plotConfig} style={{ width: "100%" }} useResizeHandler
-          />
+          /></div>
         ) : <div className="estado">Nenhuma região selecionada.</div>}
         <p className="fonte" style={{ margin: "8px 0 0" }}>Células vazias: menos de 300 movimentações no recorte.</p>
       </Painel>

@@ -3,6 +3,9 @@
 Vite + React + TypeScript + Plotly. Estático: não precisa de servidor.
 
 ## Rodar
+**Windows:** dê dois cliques em `iniciar.bat` na raiz do projeto (precisa do Node.js 20.19+ ou 22.12+, https://nodejs.org).
+
+**Linha de comando (qualquer sistema):**
 ```bash
 cd frontend
 npm install

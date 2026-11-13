@@ -1,7 +1,13 @@
-import Plotly from "plotly.js-dist-min";
+import Plotly from "plotly.js/lib/core";
+import bar from "plotly.js/lib/bar";
+import scatter from "plotly.js/lib/scatter";
+import heatmap from "plotly.js/lib/heatmap";
+import choroplethmap from "plotly.js/lib/choroplethmap";
 import createPlotlyComponent from "react-plotly.js/factory";
 import type { Layout } from "plotly.js";
 
+// Só os 4 tipos de traço usados (bundle bem menor que o plotly.js completo).
+Plotly.register([bar, scatter, heatmap, choroplethmap]);
 export const Plot = createPlotlyComponent(Plotly);
 
 /** Layout base escuro, alinhado aos tokens. Cada gráfico só sobrescreve o que precisa. */
