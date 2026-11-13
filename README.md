@@ -154,6 +154,7 @@ streamlit run dashboard/app.py
 | Indicador | Definição |
 |---|---|
 | Saldo por 10 mil hab. | (admissões − desligamentos) ÷ população × 10.000 |
+| Rotatividade bruta | (admissões + desligamentos) ÷ estoque estimado, com estoque estimado = população residente; exibida por 10 mil hab. no mapa |
 | % desligamentos a pedido | desligamentos do tipo 40 ÷ total de desligamentos |
 | Índice de reposição | desligamentos ÷ admissões |
 | Prêmio salarial ajustado | média, ponderada pelas admissões, de log(mediana da admissão ÷ mediana do desligamento) **dentro da mesma CBO** |
@@ -330,6 +331,7 @@ Leitura:
 
 ## Limites da análise
 - O CAGED mede **fluxo** de admissões e desligamentos, não estoque de empregos nem vagas abertas. Por isso o "apagão" é inferido pelo comportamento de retenção e salário.
+- A base MOV não traz o estoque de vínculos ativos; a **rotatividade bruta** usa a população residente como proxy de estoque e, portanto, mede a intensidade de movimentação por habitante — não o turnover dos empregados já contratados.
 - Só foi fornecida a base MOV; não houve desconto das exclusões (EXC).
 - O prêmio salarial tende a ser negativo, porque quem sai tem mais tempo de casa. O sinal está na comparação entre setores e regiões.
 - O índice é relativo à própria indústria catarinense e não deve ser comparado com outros estados.
