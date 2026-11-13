@@ -1,0 +1,34 @@
+/* Tokens do Raio-X SC. Superfície: MONITOR (denso, legível de relance, sem hero).
+   Dark mode único. Sem azul/índigo de template: tinta esverdeada + âmbar (pressão)
+   + verde-água (saldo positivo) + coral (saldo negativo). */
+:root {
+  color-scheme: dark;
+
+  --bg:        #0d100f;
+  --surface:   #141917;
+  --surface-2: #1b211e;
+  --line:      #28312d;
+  --line-soft: #1f2723;
+
+  --ink:       #e8ece9;
+  --ink-2:     #a7b1ab;
+  --ink-3:     #6f7a74;
+
+  --accent:    #e0a526;   /* pressão / alerta / foco */
+  --pos:       #4fb59a;   /* saldo positivo */
+  --neg:       #e0715e;   /* saldo negativo */
+  --neutral:   #7d8a83;
+
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-md: 0.9375rem;
+  --fs-lg: 1.25rem;
+  --fs-kpi: 1.625rem;
+
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px;
+  --radius: 4px;
+  --rail: 280px;
+}
