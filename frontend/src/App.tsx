@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { FiltrosProvider, useFiltros } from "./lib/filtros";
-import Rail from "./components/Rail";
+import { useEffect } from "react";
+import { Toaster, sileo } from "sileo";
+import "sileo/styles.css";
+import FilterBar from "./components/FilterBar";
 import KpiStrip from "./components/KpiStrip";
 import Mapa from "./tabs/Mapa";
 import Matriz from "./tabs/Matriz";
@@ -19,6 +22,9 @@ const ABAS = [
 function Conteudo() {
   const [aba, setAba] = useState<(typeof ABAS)[number]["id"]>("mapa");
   const { carregando, erro } = useFiltros();
+  useEffect(() => {
+    if (erro) sileo.error({ title: "Falha ao carregar dados", description: erro });
+  }, [erro]);
   const Atual = ABAS.find((a) => a.id === aba)!.C;
   return (
     <main className="main">
@@ -26,6 +32,7 @@ function Conteudo() {
         <h1>Raio-X do Mercado de Trabalho Industrial de Santa Catarina</h1>
         <p>Onde falta gente, onde sobra vaga e por quê · Equipe Kirasapiens Neurotech · Datathon UniSENAI 2026</p>
       </div>
+      <FilterBar />
       {erro ? <div className="estado erro">Erro ao carregar dados: {erro}. Rode <code>npm run sync-data</code>.</div>
         : carregando ? <div className="estado">Carregando dados…</div>
         : (<>
@@ -45,7 +52,7 @@ export default function App() {
   return (
     <FiltrosProvider>
       <div className="app">
-        <Rail />
+        <Toaster position="top-right" theme="dark" />
         <Conteudo />
       </div>
     </FiltrosProvider>
