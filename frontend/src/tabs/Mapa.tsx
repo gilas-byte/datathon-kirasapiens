@@ -5,6 +5,7 @@ import { useData } from "../lib/data";
 import { Plot, layoutBase, cores, plotConfig, escalaSeq, escalaDiv } from "../lib/plotly";
 import { mesRotulo } from "../lib/format";
 
+type MunBase = { cod_ibge: number; municipio_nome: string; regiao_imediata: string; regiao_intermediaria: string };
 type Mun = {
   cod_ibge: number; municipio_nome: string; regiao_imediata: string; regiao_intermediaria: string;
   saldo: number; movimentacoes: number; pct_pedido_demissao: number; saldo_10k_hab: number; indice_pressao: number;
@@ -26,17 +27,27 @@ const temWebGL = () => {
 function MapaSC() {
   const { selRegioes } = useFiltros();
   const { dados: mun } = useData<Mun[]>("ind_municipio.json");
+  const { dados: base } = useData<MunBase[]>("municipios.json");
   const { dados: geo } = useData<unknown>("sc_municipios.geojson");
   const [ind, setInd] = useState<Chave>("saldo");
 
   const webgl = useMemo(temWebGL, []);
   const linhas = useMemo(() => (mun ?? []).filter((m) => selRegioes.has(m.regiao_intermediaria)), [mun, selRegioes]);
   if (!webgl) return <div className="estado erro">Este navegador não tem WebGL ativo, então o mapa não pode ser desenhado. Os demais gráficos funcionam normalmente.</div>;
-  if (!mun || !geo) return <div className="estado">Carregando mapa…</div>;
+  if (!mun || !geo || !base) return <div className="estado">Carregando mapa…</div>;
 
   const cfg = INDICADORES[ind];
   // Taxas de municípios minúsculos são ruído: ficam sem cor (como no Streamlit)
   const z = linhas.map((m) => (cfg.div || m.movimentacoes >= 100 ? (m[cfg.campo] as number) : null));
+  // Municípios sem cor: ficam em cinza com explicação (nunca um buraco que parece bug)
+  const comCor = new Set(linhas.filter((_, i) => z[i] !== null).map((m) => m.cod_ibge));
+  const porCod = new Map(mun.map((m) => [m.cod_ibge, m]));
+  const cinza = base.filter((b) => selRegioes.has(b.regiao_intermediaria) && !comCor.has(b.cod_ibge));
+  const motivo = (b: MunBase) => {
+    const m = porCod.get(b.cod_ibge);
+    return m ? "Menos de 100 movimentações (" + m.movimentacoes + "): taxa sem confiança, por isso sem cor"
+             : "Sem nenhum registro na indústria no período";
+  };
   const lim = cfg.div ? Math.max(1, quantilAbs(z.filter((v): v is number => v !== null), 0.95)) : undefined;
 
   return (
@@ -56,12 +67,18 @@ function MapaSC() {
           ...(lim ? { zmin: -lim, zmax: lim, zmid: 0 } : {}),
           marker: { line: { width: 0.4, color: "#111111" } },
           colorbar: { thickness: 10, outlinewidth: 0, tickfont: { color: "#a8a8a8" } },
-        } as never]}
+        } as never, ...(cinza.length ? [{
+          type: "choroplethmap", geojson: geo, featureidkey: "properties.id", showscale: false,
+          locations: cinza.map((b) => String(b.cod_ibge)), z: cinza.map(() => 0), zmin: 0, zmax: 1,
+          colorscale: [[0, "#6a6a6a"], [1, "#6a6a6a"]],
+          text: cinza.map((b) => "<b>" + b.municipio_nome + "</b><br>" + b.regiao_imediata + "<br>" + motivo(b)),
+          hovertemplate: "%{text}<extra></extra>", marker: { line: { width: 0.4, color: "#111111" } },
+        }] : []) as never[]]}
         layout={{ ...layoutBase(), height: 520, margin: { l: 0, r: 0, t: 0, b: 0 },
                   map: { style: estiloFundo, center: { lat: -27.25, lon: -50.45 }, zoom: 6.15 } } as never}
         config={plotConfig} style={{ width: "100%" }} useResizeHandler
       />
-      <p className="fonte" style={{ margin: "8px 0 0" }}>Municípios com menos de 100 movimentações ficam sem cor nos indicadores de taxa.</p>
+      <p className="fonte" style={{ margin: "8px 0 0" }}>Cinza: município com menos de 100 movimentações (taxa sem confiança) ou sem registros no período. Passe o mouse para ver o motivo.</p>
     </>
   );
 }

@@ -25,6 +25,6 @@ export const layoutBase = (): Partial<Layout> => baseDef();
 export const cores = { pos: "#5fb3a1", neg: "#c9594f", accent: "#ff8a2b", neutral: "#808080" };
 export const plotConfig = { displayModeBar: false, responsive: true };
 
-export const escalaSeq: [number, string][] = [[0, "#333333"], [0.5, "#a35a1f"], [1, "#ff8a2b"]];
+export const escalaSeq: [number, string][] = [[0, "#3f2d1d"], [0.5, "#a35a1f"], [1, "#ff8a2b"]];
 export const escalaDiv: [number, string][] = [[0, "#c9594f"], [0.5, "#3c3c3c"], [1, "#5fb3a1"]];
 export const escalaMarcador: [number, string][] = [[0, "#8a8a8a"], [1, "#ff8a2b"]];
