@@ -111,6 +111,21 @@ def test_cubo_soma_igual_a_base(ind):
     assert c["a_pedido"].sum() == ind["pedido"].sum()
 
 
+def test_salario_hist_mediana_bate_com_a_base(ind):
+    h = exportar.salario_hist(ind)
+    a = ind[ind["admissao"] & ind["salario_valido"]]
+    assert h["n"].sum() == len(a)
+    h = h.sort_values("lo")
+    acum = h.groupby("lo")["n"].sum().cumsum()
+    meio = len(a) / 2
+    lo = acum[acum >= meio].index[0]
+    assert lo <= a["salario"].median() < h.loc[h["lo"] == lo, "hi"].iloc[0]
+
+
+def test_escolaridade_cubo_cobre_todas_as_movimentacoes(ind):
+    assert exportar.escolaridade_cubo(ind)["n"].sum() == len(ind)
+
+
 def test_manifest_lista_arquivos_existentes():
     manifest = P / "api/manifest.json"
     if not manifest.exists():

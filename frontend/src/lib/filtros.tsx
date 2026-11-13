@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { useData, type LinhaCubo } from "./data";
+import type { Municipio } from "./tipos";
 
 type Ctx = {
   regioes: string[]; setores: string[];
@@ -7,6 +8,8 @@ type Ctx = {
   alterna: (tipo: "regiao" | "setor", v: string) => void;
   todos: (tipo: "regiao" | "setor", on: boolean) => void;
   cuboFiltrado: LinhaCubo[];
+  /** região imediata -> intermediária (de municipios.json) */
+  intermediariaDe: Map<string, string>;
   carregando: boolean; erro?: string;
 };
 const C = createContext<Ctx | null>(null);
@@ -14,6 +17,8 @@ export const useFiltros = () => useContext(C)!;
 
 export function FiltrosProvider({ children }: { children: ReactNode }) {
   const { dados: cubo = [], carregando, erro } = useData<LinhaCubo[]>("cubo.json");
+  const { dados: muns = [] } = useData<Municipio[]>("municipios.json");
+  const intermediariaDe = useMemo(() => new Map(muns.map((m) => [m.regiao_imediata, m.regiao_intermediaria])), [muns]);
   const regioes = useMemo(() => [...new Set(cubo.map((l) => l.regiao_intermediaria))].sort(), [cubo]);
   const setores = useMemo(() => [...new Set(cubo.map((l) => l.setor))].sort(), [cubo]);
   // null = "tudo selecionado" (evita estado inicial dessincronizado com o carregamento)
@@ -34,5 +39,5 @@ export function FiltrosProvider({ children }: { children: ReactNode }) {
     () => cubo.filter((l) => selRegioes.has(l.regiao_intermediaria) && selSetores.has(l.setor)),
     [cubo, r, s] // eslint-disable-line react-hooks/exhaustive-deps
   );
-  return <C.Provider value={{ regioes, setores, selRegioes, selSetores, alterna, todos, cuboFiltrado, carregando, erro }}>{children}</C.Provider>;
+  return <C.Provider value={{ regioes, setores, selRegioes, selSetores, alterna, todos, cuboFiltrado, intermediariaDe, carregando, erro }}>{children}</C.Provider>;
 }

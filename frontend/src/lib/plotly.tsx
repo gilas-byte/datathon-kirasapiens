@@ -21,3 +21,4 @@ export const plotConfig = { displayModeBar: false, responsive: true };
 
 export const escalaSeq: [number, string][] = [[0, "#333333"], [0.5, "#a35a1f"], [1, "#ff8a2b"]];
 export const escalaDiv: [number, string][] = [[0, "#c9594f"], [0.5, "#3c3c3c"], [1, "#5fb3a1"]];
+export const escalaMarcador: [number, string][] = [[0, "#8a8a8a"], [1, "#ff8a2b"]];

@@ -87,7 +87,7 @@ export default function Mapa() {
         <Plot
           data={[{ type: "bar", orientation: "h", x: porRegiao.map(([, v]) => v), y: porRegiao.map(([k]) => k),
                    marker: { color: porRegiao.map(([, v]) => (v >= 0 ? cores.pos : cores.neg)) } }]}
-          layout={{ ...layoutBase(), height: 560, margin: { l: 150, r: 16, t: 8, b: 32 } }}
+          layout={{ ...layoutBase(), height: 560, margin: { l: 240, r: 16, t: 8, b: 32 } }}
           config={plotConfig} style={{ width: "100%" }} useResizeHandler
         />
       </Painel>
