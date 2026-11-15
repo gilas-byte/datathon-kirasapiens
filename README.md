@@ -6,7 +6,7 @@
 
 Desafio prático de análise de dados e inteligência artificial, Bacharelado em Ciência de Dados e IA.
 
-![Status](https://img.shields.io/badge/status-em%20andamento-blue)
+![Status](https://img.shields.io/badge/status-concluido-blue)
 ![Python](https://img.shields.io/badge/python-3.11%2B-informational)
 ![Dados](https://img.shields.io/badge/dados-Novo%20CAGED-informational)
 ![Região](https://img.shields.io/badge/regi%C3%A3o-SC-success)
