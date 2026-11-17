@@ -3,6 +3,13 @@
 Análise do mercado de trabalho industrial catarinense com dados do Novo CAGED, indicadores territoriais e painéis em React e Streamlit.
 Projeto acadêmico do Datathon CDIA 2026 · UniSENAI.
 
+![Status](https://img.shields.io/badge/status-concluido-blue) ![Python](https://img.shields.io/badge/python-3.11%2B-informational) ![Dados](https://img.shields.io/badge/dados-Novo%20CAGED-informational) ![Região](https://img.shields.io/badge/regi%C3%A3o-SC-success)
+
+## Pergunta central
+
+> Quais regiões e setores industriais de SC enfrentam **apagão de mão de obra** ou **expansão acelerada**,
+> e como **renda** e **escolaridade** explicam esses gargalos?
+
 ## O que faz
 
 Investiga quais regiões e setores industriais de SC apresentam pressão de retenção ou expansão acelerada, e como renda e escolaridade se relacionam com esses padrões.
@@ -25,13 +32,17 @@ Os achados, a metodologia e o dicionário das saídas estão em [docs/analise.md
 
 ## Estrutura do repositório
 
-| Caminho | Conteúdo |
+| Pasta | Conteúdo |
 |---|---|
-| `backend/` | Pipeline (`main.py`, `pipeline.py`), indicadores, estatística, exportação JSON e classificação de CBOs via API |
-| `frontend/` e `dashboard/app.py` | Painéis em React/TypeScript e Streamlit, respectivamente |
-| `raw/` e `data/` | Bases de entrada, tabelas de apoio, malha municipal e saídas CSV, Parquet e JSON em `data/processed/` |
-| `notebooks/` e `tests/` | Notebook documentado, versão Markdown e testes de consistência do backend |
-| `docs/`, `requirements.txt` e `iniciar.bat` | Documentação e material do evento, dependências Python e inicialização do frontend no Windows |
+| `docs/` | Material do evento (slides do desafio e Guia do Participante), equipe, análise e metodologia |
+| `raw/` | Dados brutos fornecidos (o CAGED fica fora do Git) |
+| `backend/` | Pipeline em Python: `main.py` (ponto de entrada, por etapas), `pipeline.py` (carga, limpeza, junção e exportação), `indicadores.py` (indicadores e diagnóstico), `estatistica.py` (renda × escolaridade × pedido, sensibilidade do Índice de Pressão e sazonalidade), `exportar.py` (JSON para o frontend em `data/processed/api/`), `cbo_llm.py` (prompt e API de IA para as CBOs), `geojson_sc.py` (malha de SC) |
+| `tests/` | Testes de consistência do backend (`pytest tests/`) |
+| `frontend/` | Frontend da aplicação em React (TypeScript) |
+| `dashboard/` | Dashboard analítico em Python (Streamlit): `app.py`, com 5 abas (mapa, matriz, macrofamílias, renda e escolaridade, recomendações) |
+| `data/` | Apoio: regiões do IBGE, malha municipal, macrofamílias de CBO e `processed/` (saídas do pipeline que alimentam o dashboard) |
+| `notebooks/` | Notebook documentado com o pipeline completo e as saídas |
+| `requirements.txt` e `iniciar.bat` | Dependências Python e inicialização do frontend no Windows |
 
 ## Como rodar
 
